@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Prompt Templates Lib</title>
+    <link rel="stylesheet" href="public/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="public/icons/common/bootstrap-icons.css">
+    <link rel="stylesheet" href="public/fonts/common/fraunces.css">
+    <link rel="stylesheet" href="public/css/app.css">
+</head>
+
+<body class="bg-light d-flex flex-column" style="height:100%">
+<nav class="navbar bg-white border-bottom px-3 py-2 flex-shrink-0">
+  <span class="navbar-brand fw-semibold mb-0 fs-6">prompt.templates</span>
+  <select id="langSelect" class="form-select form-select-sm w-auto" title="Language" data-i18n-title="lang_label"></select>
+</nav>
+
+<div class="d-flex flex-grow-1 overflow-hidden">
+
+  <div class="d-flex flex-column bg-white border-end flex-shrink-0 overflow-hidden" style="width:25%;min-width:200px;max-width:340px">
+    <div class="px-2 py-2 border-bottom d-flex align-items-center justify-content-between gap-2">
+      <span class="text-uppercase text-secondary fw-semibold text-nowrap" style="font-size:0.65rem;letter-spacing:.08em">
+        <span data-i18n="templates">Templates</span> <span id="tplCount" class="fw-normal"></span>
+      </span>
+      <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" title="Export JSON" data-i18n-title="title_export" onclick="exportTemplates()"><i class="bi bi-floppy"></i></button>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" title="Import JSON" data-i18n-title="title_import" onclick="document.getElementById('importFile').click()"><i class="bi bi-folder2-open"></i></button>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" title="New folder" data-i18n-title="title_new_folder" onclick="createFolder()"><i class="bi bi-folder-plus"></i></button>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-2" title="New template" data-i18n-title="title_new_template" onclick="openModal()"><i class="bi bi-file-earmark"></i></button>
+          <input type="file" id="importFile" accept=".json" class="d-none" onchange="importTemplates(event)" />
+      </div>
+    </div>
+    <div class="overflow-y-auto flex-grow-1" id="templateList"></div>
+  </div>
+
+  <div class="flex-grow-1 overflow-y-auto p-3">
+    <div class="card border rounded-3">
+      <div class="card-header d-flex align-items-center justify-content-between bg-white">
+        <span class="text-uppercase text-secondary fw-semibold" style="font-size:0.65rem;letter-spacing:.08em" data-i18n="your_text">Your text</span>
+        <code class="badge bg-primary-subtle text-primary fw-normal">{{text}}</code>
+      </div>
+
+      <div class="card-body pb-2">
+        <label class="form-label text-secondary small mb-1" data-i18n-html="your_text_hint">
+          Type your text — replaces <code>{{text}}</code> in the selected template
+        </label>
+        <input type="text" id="userText" class="form-control form-control-sm" oninput="updateOutput()" />
+      </div>
+
+      <div class="card-header bg-white border-top d-flex align-items-center justify-content-between">
+        <span class="text-uppercase text-secondary fw-semibold" style="font-size:0.65rem;letter-spacing:.08em" data-i18n="result">Result</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-secondary small" id="copyNote"></span>
+          <button class="btn btn-sm btn-outline-secondary d-none" id="copyBtn" data-i18n="copy" onclick="copyOutput()">Copy</button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div id="outputBox" class="bg-light border rounded p-2 font-monospace small" style="white-space:pre-wrap;word-break:break-word;min-height:80px">
+          <span class="text-secondary fst-italic" data-i18n="output_placeholder">Select a template and type your text above</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="tplModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-semibold" id="modalTitle" data-i18n="modal_new">New template</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" data-i18n="f_name">Template name</label>
+          <input type="text" id="modalName" class="form-control form-control-sm" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" data-i18n="f_folder">Folder</label>
+          <select id="modalFolder" class="form-select form-select-sm">
+            <option value="" data-i18n="root">Root</option>
+          </select>
+        </div>
+
+        <div class="mb-1">
+          <label class="form-label small fw-semibold text-secondary" data-i18n-html="f_body">
+            Template body — use <code>{{text}}</code> where your input goes
+          </label>
+          <textarea id="modalBody" class="form-control form-control-sm font-monospace" rows="6"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="saveTemplate()" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="public/js/bootstrap/bootstrap.min.js"></script>
+<script src="public/js/lng/en.js"></script>
+<script src="public/js/lng/ru.js"></script>
+<script src="public/js/app.js"></script>
+</body>
+</html>
